@@ -1,5 +1,4 @@
 ﻿using Camera.MAUI;
-//using HomeKit;
 using Microsoft.Maui.Controls;
 using System;
 using System.Threading.Tasks;
@@ -8,12 +7,57 @@ namespace VehicleRecognitionApp
 {
     public partial class MainPage : ContentPage
     {
+        private bool _isCapturing;
+        private const int FrameRate = 60; // Target frame rate
+
+
         public MainPage()
         {
             InitializeComponent();
-            cameraView.CamerasLoaded += CameraView_CamerasLoaded;
+            StartPseudoLiveFeed();
+
 
         }
+
+        private void StartPseudoLiveFeed()
+        {
+            _isCapturing = true;
+
+            Device.StartTimer(TimeSpan.FromMilliseconds(1000 / FrameRate), () =>
+            {
+                CaptureAndDisplaySnapshot();
+                return _isCapturing; // Return true to keep the timer running
+            });
+        }
+
+        private async void CaptureAndDisplaySnapshot()
+        {
+            try
+            {
+                // Capture a snapshot from the camera (Assuming the camera is already started)
+                ImageSource snapshot = cameraView.GetSnapShot(ImageFormat.PNG);
+
+                if (snapshot != null)
+                {
+                    // Display the snapshot in the Image control
+                    pseudoCameraFeed.Source = snapshot;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error capturing snapshot: {ex.Message}");
+            }
+        }
+
+        protected override void OnDisappearing()
+        {
+            base.OnDisappearing();
+            _isCapturing = false; // Stop capturing when the page is no longer visible
+        }
+
+
+
+
 
         private async void CameraView_CamerasLoaded(object sender, EventArgs e)
         {
