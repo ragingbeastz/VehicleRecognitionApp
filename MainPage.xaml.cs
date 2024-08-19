@@ -1,28 +1,61 @@
 ﻿using Camera.MAUI;
+using System.Diagnostics;
 using Microsoft.Maui.Controls;
 using System;
 using System.Threading.Tasks;
+//using CoreVideo;
 
 namespace VehicleRecognitionApp
 {
     public partial class MainPage : ContentPage
     {
         private bool _isCapturing;
-        private const int FrameRate = 60; // Target frame rate
-
+        private const int FrameRate = 5; // Target frame rate
 
         public MainPage()
         {
             InitializeComponent();
-            StartPseudoLiveFeed();
+           // CheckPermissionsAsync();
+            cameraView.CamerasLoaded += CameraView_CamerasLoaded;
+        }
 
+        private async void CameraView_CamerasLoaded(object sender, EventArgs e)
+        {
+            if (cameraView.NumCamerasDetected > 0)
+            {
+                cameraView.Camera = cameraView.Cameras.FirstOrDefault();
 
+                if (await cameraView.StartCameraAsync(new Size(1280, 720)) == CameraResult.Success)
+                {
+                    Console.WriteLine("Camera started successfully.");
+                    //playing = true;
+                    StartPseudoLiveFeed();
+                }
+
+                else
+                {
+                    await DisplayAlert("Error", "Unable to start camera.", "OK");
+                }
+            }
+            else
+            {
+                await DisplayAlert("Error", "No cameras detected.", "OK");
+            }
+        }
+
+        private async Task DisplayCameraFeedTest()
+        {
+            // Display the camera feed for 2 seconds to test it
+            Console.WriteLine("Displaying camera feed test...");
+            await Task.Delay(2000); // Delay to allow camera feed to display
+            Console.WriteLine("Camera feed test complete.");
         }
 
         private void StartPseudoLiveFeed()
         {
             _isCapturing = true;
 
+            // Start capturing frames at the specified frame rate
             Device.StartTimer(TimeSpan.FromMilliseconds(1000 / FrameRate), () =>
             {
                 CaptureAndDisplaySnapshot();
@@ -30,17 +63,23 @@ namespace VehicleRecognitionApp
             });
         }
 
+
         private async void CaptureAndDisplaySnapshot()
         {
             try
             {
-                // Capture a snapshot from the camera (Assuming the camera is already started)
-                ImageSource snapshot = cameraView.GetSnapShot(ImageFormat.PNG);
+                Console.WriteLine("Attempting to capture a snapshot...");
+
+                ImageSource snapshot = cameraView.GetSnapShot(Camera.MAUI.ImageFormat.PNG);
 
                 if (snapshot != null)
                 {
-                    // Display the snapshot in the Image control
                     pseudoCameraFeed.Source = snapshot;
+                    Console.WriteLine("Snapshot captured and displayed.");
+                }
+                else
+                {
+                    Console.WriteLine("Snapshot capture failed; snapshot is null.");
                 }
             }
             catch (Exception ex)
@@ -49,39 +88,13 @@ namespace VehicleRecognitionApp
             }
         }
 
+
         protected override void OnDisappearing()
         {
             base.OnDisappearing();
             _isCapturing = false; // Stop capturing when the page is no longer visible
         }
 
-
-
-
-
-        private async void CameraView_CamerasLoaded(object sender, EventArgs e)
-        {
-            if (cameraView.NumCamerasDetected > 0)
-            {
-                cameraView.Camera = cameraView.Cameras.First();
-                MainThread.BeginInvokeOnMainThread(async () =>
-                {
-                    var result = await cameraView.StartCameraAsync();
-                    if (result == CameraResult.Success)
-                    {
-                        Console.WriteLine("Camera Started");
-                    }
-                    else
-                    {
-                        await DisplayAlert("Error", "Unable to start camera.", "OK");
-                    }
-                });
-            }
-            else
-            {
-                await DisplayAlert("Error", "No cameras detected.", "OK");
-            }
-        }
 
 
 

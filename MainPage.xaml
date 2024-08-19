@@ -13,10 +13,19 @@
             <!-- Vehicle info occupies the necessary space -->
         </Grid.RowDefinitions>
 
-        <!-- Pseudo Camera Feed -->
+        <!-- Hidden Camera View -->
+        <cv:CameraView x:Name="cameraView"
+                       VerticalOptions="FillAndExpand"
+                       HorizontalOptions="FillAndExpand"
+                       IsVisible="False"/>
+
+        <!-- Pseudo Camera Feed Image -->
         <Image x:Name="pseudoCameraFeed"
                VerticalOptions="FillAndExpand"
-               HorizontalOptions="FillAndExpand"/>
+               HorizontalOptions="FillAndExpand"
+               Aspect="AspectFill"
+               BackgroundColor="Black"/>
+
 
         <!-- Vehicle Information Display -->
         <StackLayout x:Name="vehicleInfoLayout" 
