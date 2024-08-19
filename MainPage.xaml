@@ -18,31 +18,8 @@
                        VerticalOptions="FillAndExpand"
                        HorizontalOptions="FillAndExpand"/>
 
-        <!-- Vehicle Information Display -->
-        <StackLayout x:Name="vehicleInfoLayout" 
-                     Padding="20"
-                     HorizontalOptions="Center"
-                     VerticalOptions="End"
-                     BackgroundColor="#80000000" 
-                     Margin="10">
-            
-            
-            
-            <Label Text="Vehicle Information" 
-                   FontSize="20" 
-                   HorizontalOptions="Center" 
-                   Margin="0,10" 
-                   TextColor="White"/>
-            <Label x:Name="vehicleMakeModelLabel" 
-                   Text="Make and Model: " 
-                   FontSize="18" 
-                   Margin="0,5"
-                   TextColor="White"/>
-            <Label x:Name="vehicleSpecsLabel" 
-                   Text="Specifications: " 
-                   FontSize="18" 
-                   Margin="0,5"
-                   TextColor="White"/>
+        <StackLayout>
+            <Button Text="Smile" Clicked="Button_clicked" />
         </StackLayout>
     </Grid>
 </ContentPage>

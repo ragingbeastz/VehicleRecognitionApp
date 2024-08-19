@@ -11,41 +11,40 @@ namespace VehicleRecognitionApp
         public MainPage()
         {
             InitializeComponent();
+            _ = CheckPermissionsAsync();
             cameraView.CamerasLoaded += CameraView_CamerasLoaded;
 
         }
 
         private async void CameraView_CamerasLoaded(object sender, EventArgs e)
         {
-            if (cameraView.NumCamerasDetected > 0)
+            cameraView.Camera = cameraView.Cameras.First();
+
+            _ = MainThread.InvokeOnMainThreadAsync(async () =>
             {
-                cameraView.Camera = cameraView.Cameras.First();
-                MainThread.BeginInvokeOnMainThread(async () =>
-                {
-                    var result = await cameraView.StartCameraAsync();
-                    if (result == CameraResult.Success)
-                    {
-                        Console.WriteLine("Camera Started");
-                    }
-                    else
-                    {
-                        await DisplayAlert("Error", "Unable to start camera.", "OK");
-                    }
-                });
-            }
-            else
-            {
-                await DisplayAlert("Error", "No cameras detected.", "OK");
-            }
+                _ = await cameraView.StopCameraAsync();
+                _ = await cameraView.StartCameraAsync();
+            });
+
         }
 
-
-
-        protected override async void OnAppearing()
+        private void Button_clicked(object sender, EventArgs e)
         {
-            base.OnAppearing();
-            await CheckPermissionsAsync();
-        }
+            string fileName = "snapshot.png";
+            string mainDir = "/storage/emulated/0/Documents";
+            string filePath = Path.Combine(mainDir, fileName);
+
+            cameraView.SaveSnapShot(Camera.MAUI.ImageFormat.PNG, filePath); 
+        } 
+
+
+
+
+
+
+
+
+
 
         private async Task CheckPermissionsAsync()
         {
@@ -66,54 +65,5 @@ namespace VehicleRecognitionApp
             }
         }
 
-        /*
-        private async void OnCaptureImageClicked(object sender, EventArgs e)
-        {
-            try
-            {
-                var photo = await MediaPicker.CapturePhotoAsync();
-                if (photo != null)
-                {
-                    var stream = await photo.OpenReadAsync();
-                    vehicleImage.Source = ImageSource.FromStream(() => stream);
-                }
-            }
-            catch (FeatureNotSupportedException)
-            {
-                await DisplayAlert("Error", "Camera is not supported on this device.", "OK");
-            }
-            catch (PermissionException)
-            {
-                await DisplayAlert("Error", "Camera permission is required.", "OK");
-            }
-            catch (Exception ex)
-            {
-                await DisplayAlert("Error", $"An unexpected error occurred: {ex.Message}", "OK");
-            }
-        }
-
-        
-        private async void OnUploadImageClicked(object sender, EventArgs e)
-        {
-            try
-            {
-                var photo = await MediaPicker.PickPhotoAsync();
-                if (photo != null)
-                {
-                    var stream = await photo.OpenReadAsync();
-                    vehicleImage.Source = ImageSource.FromStream(() => stream);
-                }
-            }
-            catch (Exception ex)
-            {
-                await DisplayAlert("Error", $"An unexpected error occurred: {ex.Message}", "OK");
-            }
-        }
-
-        private void OnViewFavoritesClicked(object sender, EventArgs e)
-        {
-            // Navigate to the Favorites Page (to be implemented)
-        }
-        */
     }
 }
