@@ -12,14 +12,27 @@
             <RowDefinition Height="Auto" />
             <!-- Vehicle info occupies the necessary space -->
         </Grid.RowDefinitions>
-        <!-- Camera View -->
+        
+        <!-- Hidden Camera View -->
         <cv:CameraView x:Name="cameraView"
-                       Grid.Row="0" 
                        VerticalOptions="FillAndExpand"
-                       HorizontalOptions="FillAndExpand"/>
+                       HorizontalOptions="FillAndExpand"
+                       IsVisible="False"/>
 
-        <StackLayout>
-            <Button Text="Smile" Clicked="Button_clicked" />
-        </StackLayout>
+        <!-- Pseudo Camera Feed Image -->
+
+        <Image x:Name="pseudoCameraFeed"
+               VerticalOptions="FillAndExpand"
+               HorizontalOptions="FillAndExpand"
+               Aspect="AspectFill"
+               BackgroundColor="Black">
+            
+            <Image.Source>
+                <UriImageSource CachingEnabled="False"/>
+            </Image.Source>
+            
+        </Image>
+
+
     </Grid>
 </ContentPage>
